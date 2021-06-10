@@ -1,6 +1,6 @@
 baseURL = "https://codingpot.github.io/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "코딩냄비 부글부글"
 theme = "hugo-theme-console"
 
 [params]
@@ -12,13 +12,9 @@ theme = "hugo-theme-console"
   animateStyle = "animated zoomIn fast" 
 
   [[params.navlinks]]
-  name = "about/"
-  url = "about/"
+  name = "intro/"
+  url = "intro/"
 
   [[params.navlinks]]
-  name = "posts/"
-  url = "posts/"
-  
-  [[params.navlinks]]
-  name = "photos/"
-  url = "photos/"
+  name = "cicd/"
+  url = "cicd/"  
