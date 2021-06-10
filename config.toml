@@ -2,6 +2,7 @@ baseURL = "https://codingpot.github.io/"
 languageCode = "en-us"
 title = "코딩냄비 부글부글"
 theme = "cactus"
+copyright = "코딩냄비"
 
 [params]
   # Cutting off the page title to two chars for mobile (console-demo -> co)
@@ -10,6 +11,24 @@ theme = "cactus"
   # Set the animation style -- https://animate.style/
   # To disable animations, please remove or comment animationStyle parameter
   animateStyle = "animated zoomIn fast" 
+
+  description = "코딩냄비 프로젝트를 진행하며 배운것을 기록합니다."
+
+  enableInlineShortcodes = true
+
+  enableEmoji = true
+
+  showAllPostsOnHomePage = false
+  postsOnHomePage = 5
+
+  tagsOverview = true
+
+  showProjectsList = true
+  projectsUrl = "https://github.com/codingpot"
+
+[[params.social]]
+  name = "github"
+  link = "https://github.com/codingpot"
 
 [[menu.main]]
 name = "Home"
@@ -25,3 +44,17 @@ weight = 2
 name = "MLOps"
 url = "/mlops"
 weight = 3
+
+[markup]
+  [markup.highlight]
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = true
+    hl_Lines = ""
+    lineAnchors = ""
+    lineNoStart = 1
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = true
+    style = "paraiso-dark"
+    tabWidth = 4
