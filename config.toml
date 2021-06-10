@@ -1,7 +1,7 @@
 baseURL = "https://codingpot.github.io/"
 languageCode = "en-us"
 title = "코딩냄비 부글부글"
-theme = "hugo-theme-console"
+theme = "cactus"
 
 [params]
   # Cutting off the page title to two chars for mobile (console-demo -> co)
@@ -11,10 +11,17 @@ theme = "hugo-theme-console"
   # To disable animations, please remove or comment animationStyle parameter
   animateStyle = "animated zoomIn fast" 
 
-  [[params.navlinks]]
-  name = "intro/"
-  url = "intro/"
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 1
 
-  [[params.navlinks]]
-  name = "cicd/"
-  url = "cicd/"  
+[[menu.main]]
+name = "CI/CD"
+url = "/cicd"
+weight = 2
+
+[[menu.main]]
+name = "MLOps"
+url = "/mlops"
+weight = 3
