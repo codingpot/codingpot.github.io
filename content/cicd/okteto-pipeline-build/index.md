@@ -4,7 +4,7 @@ date = 2021-06-11
 comments = true
 +++
 
-코딩냄피 프로젝트 중 `pr12er`는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 `Flutter`, 백엔드는 `GO`로 작성되었으며, 이 둘간의 인터페이스는 `gRPC/protobuf`로 구성되어있습니다. 특히 `pr12er` 프로젝트의 백엔드 서버는 `PR`이 `Merge` 됨과 동시에 `Okteto`가 제공하는`k8s` 에 배포되는 `CD` 루틴을 탑니다.
+코딩냄비 프로젝트 중 `pr12er`는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 `Flutter`, 백엔드는 `GO`로 작성되었으며, 이 둘간의 인터페이스는 `gRPC/protobuf`로 구성되어있습니다. 특히 `pr12er` 프로젝트의 백엔드 서버는 `PR`이 `Merge` 됨과 동시에 `Okteto`가 제공하는`k8s` 에 배포되는 `CD` 루틴을 탑니다.
 
 이 글은 `Okteto` 에 배포하기위한 파이프라인을 분석하는 총 X 편의 시리즈물 중 첫 번째입니다.
 
@@ -106,4 +106,3 @@ ENTRYPOINT ["./server"]
 ### COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
 - `grpc_health_probe`는 `gRPC` 서버의 실행여부를 판단하는 데 쓰이는 유틸리티 프로그램입니다. 이 프로그램은 첫 번째 빌드 스테이지 중 `RUN` 지시자에서 `wget`을 통해 다운로드 받은것을 그대로 복사한 것입니다. 
 - 두 번째 스테이지에서 다운로드 받지 **못한** 이유는 초경량 이미지여서 `wget` 명령어조차 들어있지 않기 때문입니다.
-
