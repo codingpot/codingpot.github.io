@@ -1,8 +1,9 @@
-+++
-title = "Okteto 파이프라인(빌드)"
-date = 2021-06-11
-comments = true
-+++
+---
+title : "Okteto 파이프라인(빌드)"
+date : 2021-06-11
+tags:
+    - okteto
+---
 
 코딩냄비 프로젝트 중 `pr12er`는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 `Flutter`, 백엔드는 `GO`로 작성되었으며, 이 둘간의 인터페이스는 `gRPC/protobuf`로 구성되어있습니다. 특히 `pr12er` 프로젝트의 백엔드 서버는 `PR`이 `Merge` 됨과 동시에 `Okteto`가 제공하는`k8s` 에 배포되는 `CD` 루틴을 탑니다.
 

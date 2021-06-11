@@ -21,8 +21,6 @@ copyright = "코딩냄비"
   showAllPostsOnHomePage = false
   postsOnHomePage = 5
 
-  tagsOverview = true
-
   showProjectsList = true
   projectsUrl = "https://github.com/codingpot"
 
@@ -36,19 +34,14 @@ url = "/"
 weight = 1
 
 [[menu.main]]
-name = "CI/CD"
-url = "/cicd"
+name = "All posts"
+url = "/posts"
 weight = 2
 
 [[menu.main]]
-name = "MLOps"
-url = "/mlops"
+name = "Tags"
+url = "/tags"
 weight = 3
-
-[[menu.main]]
-name = "gRPC/Protobuf"
-url = "/grpc-protobuf"
-weight = 4
 
 [markup]
   [markup.highlight]
