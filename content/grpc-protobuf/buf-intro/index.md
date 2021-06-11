@@ -1,0 +1,144 @@
++++
+title = "Buf에 대한 간략한 소개"
+date = 2021-06-11
+comments = true
++++
+
+![](https://buf.build/images/logo.png)
+
+> Enter Buf: We’re building tooling to make Protobuf reliable and easy to use for service owners and clients, while keeping it the obvious choice on the technical merits.
+
+# Buf란 무엇인가?
+공식문서에 따르면 [`Buf`](https://buf.build/)는 프로토콜버퍼를 안정적이면서도, 쉽게 사용할 수 있도록 도와주는 도구입니다. 이런 도구의 등장 배경에는 프로토콜버퍼가 상대적으로 `JSON/REST` 인터페이스를 통한 서비스 대비 진입장벽이 높기 때문입니다. 
+
+## 무엇을 제공하나?
+`Buf`는 `Buf CLI` 및 `Buf Schema Registry(BSR)` 두 가지 도구를 개발하는것을 목표로합니다. 그 중 `Buf CLI` 도구는 프로토콜버퍼 파일을 분석하여 내재된 문제를 파악하는`린터(linter)`, 과거 버전의 프로토콜버퍼 대비 급격한 변화가 발생했는지를 감지하는 `(급격한 변화 감지자)breaking changes detector`, 플러그인을 지정하여 프로토콜버퍼로부터 원하는 규격의 `Stub`를 쉽게 생성하는 `(제너레이터)generator` 기능을 제공하며, 현재 어느정도 사용 가능한 수준으로 개발이 된 상태입니다. 
+
+`BSR`은 현재 클로즈드 베타테스트 중이며, 말 그대로 프로토콜버퍼 파일과 디펜던시를 중앙집중형 체제로 패키징 및 관리할 수 있는 방법을 제공하는것으로 보입니다. // 내용이 갱신되면 이에 맞춰 이 글도 수정
+
+# `Buf CLI`의 사용 방법
+
+아래의 순서를 따르는 간단한 사용 방법을 제시합니다.
+
+## 1. `Buf` 규칙 파일 생성
+`Buf`의 규칙 파일은 `buf.yaml`라는 이름이어야만 합니다. 여기에 기입 가능한 모든 스펙은 `CLI`의 옵션 형태로도 제공할 수 있지만, `buf.yaml`로 정의하여 간소화하는것이 좋습니다.
+
+이 규칙 파일에는 총 다섯 가지의 정보가 들어갑니다.
+- `version`: `Buf`의 버전 정보
+- `build`: `Buf`가 빌드시 참조할 경로 정보
+- `lint`: 적용 또는 제외할 린트 규칙 
+  - 총 40개의 규칙이 존재하며, [여기](https://docs.buf.build/lint-rules) 또는 `buf config ls-lint-rules -all` 명령어로 목록을 확인할 수 있습니다.
+- `breaking`: 급격한 변화 감지 대상 규칙
+  - 총 54개의 규칙이 존재하며, [여기](https://docs.buf.build/breaking-rules) 또는 `buf config ls-breaking-rules --all` 명령어로 목록을 확인할 수 있습니다.
+
+`Stub` 생성을 위한 규칙은 `buf.gen.yaml` 이라는 별도의 파일에 정의되어야 합니다. 
+- `version`: `Buf`의 버전 정보
+- `plugins`: 자동생성할 `Stub`에 대한 플러그인 목록
+
+## 2. 샘플 `buf.yaml` 
+다음은 `buf.yaml` 및 `buf.gen.yaml`의 샘플 파일의 모습입니다.
+
+```yaml
+# buf.yaml
+version: v1beta1
+build:
+  roots:
+    - . # 현재경로
+  excludes:
+    - ...
+lint:
+  use:
+    - ...
+  except:
+    - ...
+breaking:
+  use:
+    - ... 
+  except:
+    - ...
+```
+
+- `build` 필드에 따라 `buf.yaml` 파일을 참조하는 `Buf CLI`는 현재 디렉터리(`.`)로부터 모든 프로토콜버퍼 파일을 찾습니다. 여러개의 경로를 지정하는것도 가능하며, `vendor/github.com/...` 처럼 외부의 저장소를 지정하는것도 가능합니다. 또한 일부 제외하고 싶은 파일/경로가 있다면 `excludes` 라는 필드를 추가로 정의합니다.
+
+- `lint`의 `use` 필드는 린팅에 사용될 규칙, `except` 필드는 린팅에서 제외될 규칙을 나열합니다. 
+  
+- `breaking` 또한 `lint`와 마찬가지 입니다. 
+
+```yaml
+# buf.gen.yaml
+version: v1beta1
+plugins:
+  - name: java
+    out: java
+  - name: cpp
+    out: cpp
+    opt: ...
+    path: ...
+```
+
+- `plugins`는 `Stub` 생성에 사용될 플러그인을 지정합니다. 상기 예제에서는 `java`와 `cpp`에 대한 프로토콜버퍼 `Stub`을 생성하고, 생성된 파일을 각각 `java` 및 `cpp` 디렉터리에 저장하라는 것을 지시합니다.
+- `opt` 필드는 플러그인에 전달할 추가적인 인자를 정의합니다 (예시. `paths=source_relative`)
+- `path` 필드는 사용할 플러그인의 바이너리 이름이 커스텀인 경우, 이를 지정할 수 있습니다. 단 해당 바이너리는 `$PATH`에 등록된 것이어야 합니다.
+
+## 3. 현재 저장소에서 `Buf 이미지` 빌드 가능성 검사
+`buf build` 명령어를 사용하면 on the fly 형태로 빌드를 수행합니다. 즉 빌드 가능성을 검사하는 데 쓰이기도 합니다. 또는 `buf build -o 이미지명.bin` 과 같은 명령어를 수행하면, 현재 저장소의 버전을 기준으로 빌드된 이미지를 생성합니다. 이렇게 생된 이미지는 이후 버전이 업그레이드 된 저장소와 비교하는 데 쓰일 수 있습니다.
+
+## 4. `buf lint`
+`buf.yaml` 파일에 나열한 린팅 규칙에 따라 린트를 수행합니다. 규칙에 기반해 문제의 소지가 있는경우, 터미널에 발견된 문제의 위치와 이유가 상세히 표시됩니다.
+
+## 5. `buf breaking --against`
+`buf.yaml` 파일에 나열한 급격한 변화 감지 대상 규칙에 따라 감지를 수행합니다. 단, 비교 대상이 있어야 하므로, `buf breaking --against 비교대상` 처럼 비교대상을 지정해 줘야합니다. 
+
+비교 대상으로는 `buf build -o 이미지명.bin`으로 생성해둔 `Buf 이미지`를 지정할 수도 있으며, 버전 컨트롤이 되고 있는 깃 저장소(로컬 또는 리모트)를 대상으로 지정할 수도 있습니다.
+- `buf breaking --against 이미지명.bin`
+- `buf breaking --against 'https://github.com/foo/bar.git'`
+- `buf breaking --against '.git#tag=v1.0.0'`
+- `buf breaking --against '.git#branch=master'`
+
+## 6. 플러그인에 따른 `Stub` 생성
+`Stub` 생성은 `buf generate` 명령어로 수행됩니다. 상기의 예제 `buf.gen.yaml` 파일에 대해서 `buf generate -o gen` 이라는 명령을 실행하면, `gen` 이라는 디렉터리가 생성되고, `gen/java` 및 `gen/cpp` 라는 각각의 디렉터리에 언어별로 생성된 `Stub`가 저장됩니다.
+
+### 옵션
+- `--template`: `buf.gen.yaml` 대신 사용할 파일을 지정할 수 있습니다. 
+  - 직접 YAML 또는 JSON 문자열을 전달할 수도 있습니다.
+- `--template` 다음에 오는 경로/리모트주소: `buf.gen.yaml`이 적용될 대상을 지정할 수 있습니다.
+  - 이때 추가적으로 `--path` 옵션을 주면, 지정된 경로의 특정 파일/디렉터리를 세분화하여 특정지을 수 있습니다.
+
+```shell
+# JSON 으로 주입
+$ buf generate --template '{"version":"v1beta1","plugins":[{"name":"go","out":"gen/go"}]}'
+
+# 해당 저장소를 다운로드 한 후, 템플릿 적용하여 생성 (현재 디렉터리에)
+$ buf generate --template bar.yaml https://github.com/foo/bar.git
+
+# 해당 저장소를 다운로드 한 후, 템플릿 적용하여 생성 (bar 디렉터리에)
+$ buf generate --template bar.yaml -o bar https://github.com/foo/bar.git
+
+# 특정 두 프로토콜버퍼 파일만을 지정
+$ buf generate --path proto/foo/foo.proto --path proto/foo/bar.proto
+
+# 해당 저장소를 다운로드 한 후, proto/foo 디렉터리만을 대상으로 지정
+$ buf generate --template buf.gen.yaml https://github.com/foo/bar.git --path proto/foo
+```
+
+### 플러그인의 종류
+플러그인은 반드시 `Buf`에서 제공하는것만을 사용할 필요는 없습니다. 경우에 따라 써드파티에서 개발된 플러그인을 활용할 수도 있습니다. 다만 깃헙에서 오픈소스 프로젝트로 진행되어, 그 목록을 모두 찾는것은 어려울지도 모릅니다. 다음은 제 기준으로 유용하다고 판단되는 플러그인 목록을 나열합니다.
+
+```yaml
+version: v1beta1
+plugins:
+  - name: go
+  - name: go-grpc
+  - name: grpc-gateway
+  - name: dart
+  - name: java
+  - name: python
+```
+
+
+# 마치며
+`Buf`와 유사한 기능을 이미 제공하던 프로젝트 중 Uber에서 만든 [`Prototool`](https://github.com/uber/prototool) 이란것이 있습니다. 대충 보기에는 `Buf`와 거의 동일하지만, 공식문서상 `Buf`를 시도해볼것을 권장하고 있습니다. 
+
+> We recommend checking out Buf, which is under active development. There are a ton of docs for getting started, including for migration from Prototool.
+
+다만, `Prototool`은 이미 사용 시스템에서 안정적으로 사용되는 검증된 도구이며, `Buf`는 열심히 개발중인 안정성이 떨어지는(버그가 많은) 도구라고 볼 수 있습니다. 하지만 다행히 이 두 도구의 사용법은 크게 다르지 않으므로 둘 다를 모두 익혀두는것이 좋을것 같습니다. 기회가되면 `Prototool` 도 한번 살펴보도록 하겠습니다.
