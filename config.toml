@@ -45,6 +45,11 @@ name = "MLOps"
 url = "/mlops"
 weight = 3
 
+[[menu.main]]
+name = "gRPC/Protobuf"
+url = "/grpc-protobuf"
+weight = 4
+
 [markup]
   [markup.highlight]
     anchorLineNos = false
