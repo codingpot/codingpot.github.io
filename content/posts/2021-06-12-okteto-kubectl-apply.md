@@ -49,7 +49,7 @@ k8s/kkweon-okteto/
 - Ingress 컨트롤러의 역할에는 외부 트래픽을 수용하여 내부 Pod 들로 로드밸런싱하기, 클러스터 밖의 다른 서비스와 소통이 필요한 트래픽 관리, Pods들을 모니터링하여 추가/제거에 따른 로드밸런싱 규칙 갱신 등이 있습니다. 
 - 쿠버네티스가 공식적으로 지원하는 Ingress 컨트롤러로는 `AWS`, `GCE`, `nginx`가 있으며, 그 외의 써드파티에서 나온 Ingress 컨트롤러도 종류가 다양하니 요구사항에 맞는것을 찾아서 사용하면 됩니다 [(목록)](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 
-[**nginx.ingress.kubernetes.io/backend-protocol: "GRPC"****](https://kubernetes.github.io/ingress-nginx/examples/grpc/#grpc)
+[**nginx.ingress.kubernetes.io/backend-protocol: "GRPC"**](https://kubernetes.github.io/ingress-nginx/examples/grpc/#grpc)
 > This is the magic ingredient that sets up the appropriate nginx configuration to route http/2 traffic to our service.
 - 위는 공식문서의 설명입니다. 즉 nginx의 설정을 건드려서, `HTTP/2` 트래픽이 쿠버네티스 내부 서비스로 들어올 수 있도록 해줍니다. gRPC를 사용하려면 `HTTP/2` 프로토콜이 반드시 필요하므로, 이 설정을 반드시 해줘야 합니다.
 
@@ -62,8 +62,27 @@ k8s/kkweon-okteto/
 `Ingress` 스펙은 일련의 규칙을 정의합니다. 특히 `backend` 라는 필드와, 그 이전까지의 부분들로 나누어 생각할 수 있습니다. `backend`는 말 그대로 `Ingress`를 통해 도달한 트래픽이 도달해야 할 쿠버네티스 내부의 위치를 의미합니다. 따라서 `backend`는 쿠버네티스 내부에서 목적지를 찾아가기 위한 규칙을 정의하는 필드이며, `backend` 이전까지의 필드들은 수용할 외부 트래픽의 형식을 판단하는 규칙을 정의합니다. 
 
 ```yaml
-d
+spec:
+  rules:
+    - host: this-name-does-not-matter
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server
+                port:
+                  name: grpc
 ```
+
+`pr12er` 프로젝트에서 정의한 `Ingress` 스펙(규칙)을 살펴보죠.
+1. `rules`는 규칙 목록을 나열하기 위한 필드입니다.
+2. 우선 가장 먼저 `host` 이름을 규칙에 정의합니다. 이곳에는 보통 호스트명이 오지만, `Okteto`의 **`dev.okteto.com/generate-host: "true"`** 애노테이션을 사용했기 때문에, `Okteto`가 내부적으로 할당합니다. 따라서 무슨 값이 오더라도 상관 없습니다.
+3. 그 다음 경로를 지정합니다. `path: /` 와 `pathType: Prefix` 라고 적는 경우, 모든 경로의 트래픽을 다 수용한다는 의미입니다. `Prefix`가 가지는 의미는 [여기](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types)를 참고하기 바랍니다. 
+4. 이제 `backend` 필드가 등장합니다. 즉 `Okteto`가 내부적으로 할당한 호스트명에 대해 모든 경로로 접근하는 트래픽은 `backend`에서 정의한 내부 목적지로 이동합니다.
+5. `service.name: server`는 들어온 외부 트래픽이 도달할 서비스 이름을 정의합니다. 여기서 해당 서비스 이름은 `server` 이므로, 이 `Ingress`를 거쳐 들어온 외부 트래픽이 포워딩될 목적지를 파악하려면 `server` 라는 이름을 가진 서비스를 찾아봐야 합니다. 아래에서 확인하겠습니다. 
+6. `service.port.name: grpc`는 들어온 외부 트래픽이 내부에서 전달될 포트번호를 명시합니다. `service.port.number` 필드로 직접 포트 번호를 명시해도 좋지만, `service.port.name` 을 활용하여 특정 프로토콜에 이미 예약된 포트번호를 할당하는것도 가능합니다. 여기서는 `grpc`로 명시하였습니다.
 
 ### Service Metadata
 
