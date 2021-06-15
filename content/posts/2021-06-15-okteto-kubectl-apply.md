@@ -1,6 +1,6 @@
 ---
 title: "Okteto에 gRPC용 Deployment, Service, Ingress 설정"
-date: 2021-06-16
+date: 2021-06-15
 tags:
     - okteto
     - kubectl
@@ -288,6 +288,6 @@ spec:
 > kubectl create service server ...
 ```
 
-마지막으로 gRPC 애플리케이션 배포를 위해 기억해둘 것은 **Ingress** 객체 정의시 gRPC를 지원하는 **Ingress** 컨트롤러와 백엔드 프로토콜을 설정하는 것입니다. **pr12er** 프로젝트에서는 **kubernetes.io/ingress.class: "nginx"**와 **nginx.ingress.kubernetes.io/backend-protocol: "GRPC"**를 사용하였고, 라즈베리파이 같은 경우는 **kubernetes.io/ingress.class: "traefik"**과 **ingress.kubernetes.io/protocol: h2c** 이 사용될 수 있습니다. 
+마지막으로 gRPC 애플리케이션 배포를 위해 기억해둘 것은 **Ingress** 객체 정의시 gRPC를 지원하는 **Ingress** 컨트롤러와 백엔드 프로토콜을 설정하는 것입니다. **pr12er** 프로젝트에서는 **kubernetes.io/ingress.class: "nginx"** 와 **nginx.ingress.kubernetes.io/backend-protocol: "GRPC"** 를 사용하였고, 라즈베리파이 같은 경우는 **kubernetes.io/ingress.class: "traefik"** 과 **ingress.kubernetes.io/protocol: h2c** 이 사용될 수 있습니다. 
 
 쿠버네티스 환경에 gRPC를 활용한 애플리케이션을 배포하고 싶다면 이를 꼭 확인하기 바랍니다.
