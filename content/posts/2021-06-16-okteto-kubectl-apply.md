@@ -1,17 +1,17 @@
 ---
 title: "Okteto에 gRPC용 Deployment, Service, Ingress 설정"
-date: 2021-06-11
+date: 2021-06-16
 tags:
     - okteto
     - kubectl
 ---
 
-> 코딩냄비 프로젝트 중 **pr12er**는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 **Flutter**, 백엔드는 **GO**로 작성되었으며, 이 둘간의 인터페이스는 **gRPC/protobuf**로 구성되어있습니다. 특히 **pr12er** 프로젝트의 백엔드 서버는 **PR**이 **Merge** 됨과 동시에 **Okteto**가 제공하는**k8s** 에 배포되는 **CD** 루틴을 탑니다.
+> 코딩냄비 프로젝트 중 **pr12er**는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 **Flutter**, 백엔드는 **Go**로 작성되었으며, 이 둘간의 인터페이스는 **gRPC/protobuf**로 구성되어있습니다. 특히 **pr12er** 프로젝트의 백엔드 서버는 **PR**이 **Merge** 됨과 동시에 **Okteto**가 제공하는**k8s** 에 배포되는 **CD** 루틴을 탑니다.
 
 이 글은 **Okteto** 에 배포하기위한 파이프라인을 분석하는 총 X 편의 시리즈물 중 두 번째입니다.
 
-1. [**Okteto** 파이프라인 개요, **okteto build**, **pr12er** 서버용 **Dockerfile** 분석](https://codingpot.github.io/cicd/okteto-pipeline-build/)
-2. [**Okteto**에 gRPC용 **Deployment**, ****Service****, **Ingress** 설정](https://codingpot.github.io/cicd/okteto-kubectl-apply/)
+1. [**Okteto** 파이프라인 개요, **okteto build**, **pr12er** 서버용 **Dockerfile** 분석](https://codingpot.github.io/posts/2021-06-11-okteto-pipeline-build/)
+2. [**Okteto**에 gRPC용 **Deployment**, ****Service****, **Ingress** 설정](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-apply/)
 3. ................
 
 # **pr12er**에 적용된 **Okteto** 파이프라인 명세서
@@ -35,7 +35,7 @@ k8s/kkweon-okteto/
 
 현재 **/k8s/kkweon-okteto/** 디렉터리 내부에는 보다 다양한 **yaml** 파일들이 존재하지만, **gRPC** 서버를 운용하기위한 최소한의 조건은 k8s의 **Deployment**, ****Service****, **Ingress** 객체를 정의해둔 **ingress.yaml** 및 **server.yaml** 두 파일만 참조하면 기본은 이해할 수 있습니다. 우선 각 파일의 세부 사항과 서로 엮인 관계를 분석해보죠.
 
-![](./images/ingress-service-deployment.png)
+![](https://codingpot.github.io/posts/images/ingress-service-deployment.png)
 
 ## Ingress
 - 서버 애플리케이션이 위치한 쿠버네티스 플랫폼은 외부로부터 차단된 고유한 영역을 가집니다. 하지만 사용자는 쿠버네티스 플랫폼 외부에  존재하는것이 보통이며, 이들은 쿠버네티스 자원으로 구축된 서버에 접근할 필요가 있습니다. **Ingress**는 쿠버네티스 외부와 내부를 엮어주는 일종의 브릿지 역할을 하는 객체입니다. 
