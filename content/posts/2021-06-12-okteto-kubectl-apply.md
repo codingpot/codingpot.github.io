@@ -99,7 +99,7 @@ metadata:
   name: server
 ```
 
-**Service** 메타데이터에는 **Service** 객체를 구분할 수 있는 식별자를 기입합니다. 특히 **metadata.name**에 적힌 이름이 바로 **Ingress**의 **backend.Service.name**과 매칭이 되어야만, 해당 **Ingress**를 통해 들어온 외부 트래픽이 해당 **Service**로 연결될 수 있습니다. **pr12er** 프로젝트에서는 **server** 라는 이름을 할당했습니다. 
+**Service** 메타데이터에는 **Service** 객체를 구분할 수 있는 식별자를 기입합니다. 특히 **metadata.name**에 적힌 이름이 바로 **Ingress**의 **backend.service.name**과 매칭이 되어야만, 해당 **Ingress**를 통해 들어온 외부 트래픽이 해당 **Service**로 연결될 수 있습니다. **pr12er** 프로젝트에서는 **server** 라는 이름을 할당했습니다. 
 
 ### Service Spec
 
