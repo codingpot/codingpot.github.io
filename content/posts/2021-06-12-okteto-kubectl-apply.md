@@ -35,7 +35,7 @@ k8s/kkweon-okteto/
 
 현재 **/k8s/kkweon-okteto/** 디렉터리 내부에는 보다 다양한 **yaml** 파일들이 존재하지만, **gRPC** 서버를 운용하기위한 최소한의 조건은 k8s의 **Deployment**, ****Service****, **Ingress** 객체를 정의해둔 **ingress.yaml** 및 **server.yaml** 두 파일만 참조하면 기본은 이해할 수 있습니다. 우선 각 파일의 세부 사항과 서로 엮인 관계를 분석해보죠.
 
-![](./images/ingress-**Service**-deployment.png)
+![](./images/ingress-service-deployment.png)
 
 ## Ingress
 - 서버 애플리케이션이 위치한 쿠버네티스 플랫폼은 외부로부터 차단된 고유한 영역을 가집니다. 하지만 사용자는 쿠버네티스 플랫폼 외부에  존재하는것이 보통이며, 이들은 쿠버네티스 자원으로 구축된 서버에 접근할 필요가 있습니다. **Ingress**는 쿠버네티스 외부와 내부를 엮어주는 일종의 브릿지 역할을 하는 객체입니다. 
