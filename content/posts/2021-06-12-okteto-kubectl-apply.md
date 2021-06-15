@@ -82,7 +82,7 @@ spec:
 3. 그 다음 경로를 지정합니다. **path: /** 와 **pathType: Prefix** 가 함께 쓰이면, 모든 경로의 트래픽을 수용합니다 [(참고자료)](https://kubernetes.io/docs/concepts/**Service**s-networking/ingress/#path-types). 
 4. 이제 **backend**가 등장합니다. 즉 **Okteto**가 내부적으로 할당한 호스트명에 대해 모든 경로로 접근하는 트래픽은 **backend**에서 정의된 내부 목적지로 포워딩 되는것이죠.
 5. **service.name: server**는 들어온 외부 트래픽이 도달할 **Service** 이름입니다. 여기서는 **server** 이므로, 이 **Ingress**를 거쳐 들어온 외부 트래픽이 포워딩될 목적지를 파악하려면 **server** 라는 이름을 가진 **Service**를 찾아봐야 한다고 해석될 수 있습니다. **Service**에 대한 부분은 잠시 후 아래에서 확인하겠습니다. 
-6. **Service.port.name: grpc**는 들어온 외부 트래픽이 내부에서 전달될 포트명을 명시합니다. ****Service**.port.number**로 직접 포트 번호를 명시할 수도 있지만, **Service.port.name**을 활용하면 특정 프로토콜에 이미 예약된 포트번호를 할당하는것도 가능합니다. 여기서는 **grpc**로 명시합니다.
+6. **service.port.name: grpc**는 들어온 외부 트래픽이 내부에서 전달될 포트명을 명시합니다. ****service**.port.number**로 직접 포트 번호를 명시할 수도 있지만, **service.port.name**을 활용하면 특정 프로토콜에 이미 예약된 포트번호를 할당하는것도 가능합니다. 여기서는 **grpc**로 명시합니다.
 
 ## Service
 
