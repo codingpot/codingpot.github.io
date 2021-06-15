@@ -70,7 +70,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              Service:
+              service:
                 name: server
                 port:
                   name: grpc
