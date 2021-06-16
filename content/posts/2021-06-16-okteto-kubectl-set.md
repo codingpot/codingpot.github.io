@@ -1,9 +1,12 @@
 ---
-title: "Okteto에 gRPC용 Deployment, Service, Ingress 설정"
-date: 2021-06-15
+title: "Okteto에 Deployment를 롤아웃 하기"
+date: 2021-06-16
 tags:
     - okteto
     - kubectl
+    - kubectl-set-image
+    - kubectl-rollout-restart
+    - kubectl-rollout-status
 ---
 
 > 코딩냄비 프로젝트 중 **pr12er**는 TensorFlow Korea의 논문을 읽고/리뷰하는 모임 PR12에서 촬영된 동영상을 큐레이션하는 프로젝트입니다. 개략적으로 프론트엔드는 **Flutter**, 백엔드는 **Go**로 작성되었으며, 이 둘간의 인터페이스는 **gRPC/protobuf**로 구성되어있습니다. 특히 **pr12er** 프로젝트의 백엔드 서버는 **PR**이 **Merge** 됨과 동시에 **Okteto**가 제공하는**k8s** 에 배포되는 **CD** 루틴을 탑니다.
@@ -12,7 +15,7 @@ tags:
 
 1. [**Okteto** 파이프라인 개요, **okteto build**, **pr12er** 서버용 **Dockerfile** 분석](https://codingpot.github.io/posts/2021-06-11-okteto-pipeline-build/)
 2. [**Okteto**에 gRPC용 **Deployment**, ****Service****, **Ingress** 설정](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-apply/)
-3. [**정적 yaml 파일의 설정을 동적으로 바꾸기**]()
+3. [**정적 yaml 파일의 설정을 동적으로 바꾸기**](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-set/)
 
 # **pr12er**에 적용된 **Okteto** 파이프라인 명세서
 
@@ -34,7 +37,7 @@ deploy:
   CONTAINER_NAME_1=CONTAINER_IMAGE_1 ... CONTAINER_NAME_N=CONTAINER_IMAGE_N
 ```
 
-여기서 **TYPE** 이라는 부분에는 **pod**, **replicationcontroller**, **deployment**, **daemonset**, **replicaset** 이라는 키워드가 올 수 있습니다. 즉 이 블로그 시리즈물에서는 **deployment** 만을 다뤘지만, 그 외에도 콘테이너 스펙을 명시할 수 있는 쿠버네티스의 객체 종류가 다양한 것을 알 수 있습니다. 또한, **TYPE NAME** 대신 파일명 자체를 지정할 수도 있습니다. 
+여기서 **TYPE** 이라는 부분에는 **pod**, **replicationcontroller**, **deployment**, **daemonset**, **replicaset** 이라는 키워드가 올 수 있습니다. 즉 이 블로그 시리즈물에서는 **Deployment** 만을 다뤘지만, 그 외에도 콘테이너 스펙을 명시할 수 있는 쿠버네티스의 객체 종류가 다양합니다. 또한 **TYPE NAME** 대신 **-f** 옵션을 사용하면 파일명 자체를 지정할 수도 있으며, 하나의 **Deployment** 에 포함 가능한 여러개의 컨테이너 명세서를 원하는 만큼 갱신할 수도 있습니다.
 
 그러면 **pr12er** 에서 이 명령어가 어떻게 사용되었는지를 말로 풀어 설명해보겠습니다.
 
@@ -94,9 +97,19 @@ spec:
 > kubectl rollout status (TYPE NAME) [flags]
 ```
 
-> By default 'rollout status' will watch the status of the latest rollout until it's done. 
+> By default 'rollout status' will watch the status of the latest rollout **until it's done.** 
 
-이 명령은 현재 롤아웃되는 자원의 상태를 지속적으로 체크합니다. 그리고 롤아웃이 완료될 때까지 그 체크는 계속됩니다. 따라서 
+이 명령은 현재 롤아웃되는 자원의 상태를 지속적으로 체크합니다. 그리고 롤아웃이 완료될 때까지 그 체크는 계속되며 완전히 롤아웃이 완료될 때까지 기다리게 됩니다. 롤아웃이 완료되었다고 판단되는 시점은 다음 세 조건을 충족했을 때입니다 [링크](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#deployment-status).
+- 해당 **Deployment**에 연관된 모든 **Pod(replica에 명시된 수만큼)** 들이 새로운 버전으로 갱신됨
+- 새로운 버전으로 채워진 **Pod** 들이 가용상태가 됨
+- 이전 버전의 **Pod** 들이 완전히 셧다운됨 (남은 놈들이 없음)
+
+이 명령이 실행되면 콘솔 창에는 아래와 유사한 메시지가 출력되며, 성공적으로 롤아웃이 완료됨의 여부는 **exit status** 를 검사해 보면 알 수 있습니다. **exit status** 는 **$?** 로 접근할 수 있으므로, 만약 성공적으로 롤아웃된 경우 이 값을 출력하면 **0** 이라는 값을 얻게됩니다.
+
+```shell
+Waiting for rollout to finish: 1 of 1 updated replicas are available...
+deployment "server" successfully rolled out
+```
 
 ## 참고자료
 - **kubectl set image**
