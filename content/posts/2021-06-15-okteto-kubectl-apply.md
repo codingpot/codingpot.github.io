@@ -12,7 +12,7 @@ tags:
 
 1. [**Okteto** 파이프라인 개요, **okteto build**, **pr12er** 서버용 **Dockerfile** 분석](https://codingpot.github.io/posts/2021-06-11-okteto-pipeline-build/)
 2. [**Okteto**에 gRPC용 **Deployment**, ****Service****, **Ingress** 설정](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-apply/)
-3. ................
+3. [**정적 yaml 파일의 설정을 동적으로 바꾸기**](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-set/)
 
 # **pr12er**에 적용된 **Okteto** 파이프라인 명세서
 

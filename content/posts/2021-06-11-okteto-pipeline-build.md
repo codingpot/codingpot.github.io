@@ -10,8 +10,8 @@ tags:
 이 글은 `Okteto` 에 배포하기위한 파이프라인을 분석하는 총 X 편의 시리즈물 중 첫 번째입니다.
 
 1. [`Okteto` 파이프라인 개요, `okteto build`, `pr12er` 서버용 `Dockerfile` 분석](https://codingpot.github.io/cicd/okteto-pipeline-build/)
-2. [Okteto에 gRPC용 Deployment, Service, Ingress 설정]()
-3. ................
+2. [**Okteto**에 gRPC용 **Deployment**, ****Service****, **Ingress** 설정](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-apply/)
+3. [**정적 yaml 파일의 설정을 동적으로 바꾸기**](https://codingpot.github.io/posts/2021-06-16-okteto-kubectl-set/)
 
 ## `Okteto` 파이프라인의 개요
 말 그대로 `Okteto`에 원하는 애플리케이션을 배포하는 일련의 과정(파이프라인)을 정의하는 방법입니다. 일반적으로 `okteto-pipeline.yaml` 이라는 파일로 작성되며, 그 과정은 다음과 같습니다.
